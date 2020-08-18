@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>列表添加</title>
+    <script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+    <style>
+        .add {
+            display: flex;
+            justify-content: space-between;
+            margin-left: 0%;
+            margin-right: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h4>添加</h4>
+        <div class="add">
+            <label>Id:<input type="text" v-model="id"></label>
+            <label>Name:<input type="text" v-model="name"></label>
+            <!-- 在vue中使用事件绑定机制，为元素指定处理函数时，若加了括号可给函数传参 -->
+            <input type="button" value="添加" @click='add'>
+            <!-- 直接写"blue" blue为一个变量 -->
+            <label>搜索名称关键字:<input type="text" v-model="keywords" v-focus v-color="'blue'"></label>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Ctime</th>
+                    <th>Operation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 之前v-for上数据都是直接从data中的list渲染过来的 -->
+                <!-- 现在,自定义一个search方法,同时 把所有关键字通过传参形式传递给search方法 -->
+                <!-- 在search 方法内部通过 for 循环把符合的数据保存在新数组中 -->
+                <tr v-for='item in search(keywords)' :key='item.id'>
+                    <td>{{ item.id }}</td>
+                    <td v-text='item.name'></td>
+                    <td>{{ item.ctime | dateFormat }}</td>
+                    <!-- 阻止click事件默认行为 -- 刷新页面 -->
+                    <td><a href="" @click.prevent="del(item.id)">删除</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+<script>
+    Vue.config.devtools = true
+    // 使用 Vue.directive()自定义指令 
+    // 参数1 : 指令名称 注意: 在定义时，指令名称前面不需要加 v- 前缀,但调用时必须在指令名称前加 v-前缀
+    // 参数2 : s是一个对象，在这个对象上有一些指令相关函数，这些函数可在特定阶段执行相关操作
+    Vue.directive('focus', {
+        bind: function (el) { // 指令第一次绑定元素时调用且只调用一次 内存中
+            // 在每个函数中, 第一个参数永远是el,表示绑定了指令的那个元素,el是个原生的JS对象 -- DOM对象
+            // 在元素 刚绑定指令时 还未插入到DOM中
+            // 可以来添加事件监听器 和 与样式有关的操作
+        },
+        // 当元素插入到 DOM 中 触发一次
+        inserted: function (el) { //和DOM有关的操作最好放入此处防止JS行为不生效
+            // 聚焦元素
+            el.focus();
+        },
+        updated: function () {
+            //当VNode更新执行 , 可触发多次
+        }
+    })
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            id: '',
+            name: '',
+            keywords: '', //搜索关键字
+            list: [
+                { id: 1, name: 'apple', ctime: new Date() },
+                { id: 2, name: 'orange', ctime: new Date() },
+            ]
+        },
+        methods: {
+            add() {   //添加
+                // 1. 获取id和name
+                var newData = {
+                    id: this.id,
+                    name: this.name,
+                    ctime: new Date(),
+                }
+                this.list.push(newData)
+            },
+            del(id) {
+                // this.list.some((item,i)=>{
+                //     if(item.id === id){
+                //         this.list.splice(i,1)
+                //         // 在数组的some方法中,如果return true,就会立刻终止这个数组的后续循环
+                //         return true;
+                //     }
+                // })
+                var index = this.list.findIndex(item => {
+                    if (item.id === id) {
+                        return true;
+                    }
+                })
+
+                // console.log(index);
+                this.list.splice(index, 1)
+            },
+            search(keywords) { //根据关键字进行查找
+                /*              var newList = [];
+                                this.list.forEach(item=>{
+                                    if(item.name.indexOf(keywords) !== -1) {
+                                        newList.push(item);
+                                    }
+                                });
+                                return newList; */
+
+                // forEach fliter findIndex some 都属于数组新方法  都会对数组每一项进行遍历
+                var newList = this.list.filter(item => {
+                    //console.log(item);
+                    // ES6中为字符串提供了一个新方法 -- String.prototype.includes('要包含的字符串')
+                    if (item.name.includes(keywords)) {
+                        return item;
+                    }
+                })
+                return newList;
+            }
+        },
+        filters: { //定义私有过滤器 
+            dateFormat: function (dateStr, pattern = "") { // 若私有和共有过滤器重名 , 则使用当前vue实例下的私有过滤器  -- 就近原则
+                var dt = new Date(dateStr);
+
+                var year = dt.getFullYear();
+                var month = dt.getMonth() + 1;
+                var day = dt.getDate();
+
+                if (pattern.toLowerCase() === 'yyyy-mm-dd') {
+                    return `${year}-${month}-${day}`;
+                } else {
+                    var hour = dt.getHours();
+                    var minute = dt.getMinutes();
+                    var second = dt.getSeconds();
+
+                    return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                }
+            }
+        },
+        directives: {
+            'color': {
+                bind: function (el, binding) { 
+                    // 样式只要通过指令绑定给元素，不管元素有没有被渲染到页面中，这元素也有内联样式
+                    el.style.color = binding.value;
+                    // console.log(binding.name); 
+                    // binding为一个对象 其属性 name:指令名(不含 v-) value:指令的绑定值 expression:绑定在的字符串形式
+                    
+                }
+            },
+            'fontsize': function(el, binding) { //相当于把代码写入到 bind  和 updated中
+
+            }
+        }
+    });
+</script>
+
+</html>

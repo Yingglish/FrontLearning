@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+    <title>父子组件关系的传递</title>
+</head>
+<body>
+  <div id="app">
+    <parent-component></parent-component>
+  </div>
+  <script>
+    "use strict";
+      /*
+        父子组件关系:父组件通过 props 向下传递数据给子组件，子组件通过 events 给父组件(props down, events up)
+      */
+
+      //若在子组件中定义prop时，使用了camelCase命名法
+      //由于HTML特性不区分大小写，camelCase的prop用于特性时，需要转为 kebab-case（短横线隔开）
+      //例如，在prop中定义的myName，在用作特性时需要转换为my-name
+      const childComponent_1 = {
+        template:`
+        <table>
+            <tr>
+              <td colspan = "2">子组件数据</td>
+            </tr>
+            <tr>
+              <td>Name</td>
+              <td>{{name}}</td>
+            </tr>
+            <tr>
+              <td>Age</td>
+              <td>{{age}}</td>
+            </tr>
+        </table>
+        `,
+        props:['name','age']
+      }
+      const childComponent_2 = {
+        template:`
+        <table>
+            <tr>
+              <td colspan = "3">子组件数据</td>
+            </tr>
+            <tr>
+              <td>Name</td>
+              <td>{{myName}}</td>
+              <td><input type="text" v-model='myName'/></td>
+            </tr> 
+            <tr>
+              <td>Age</td>
+              <td>{{myAge}}</td>
+              <td><input type="text" v-model='myAge'/></td>
+            </tr>                
+        </table>
+        `,
+        watch:{
+          myName:function(){
+            this.$emit('update:myName',this.myName) //子组件传递的事件名必须为update:prop名 , this指向vue实例
+          },
+          myAge:function(){
+            this.$emit('update:myAge',this.myAge)
+          },
+          //使用v-bind 和 v-on 来替代时需将事件名改为 update:my-age
+
+          //v-on 事件监听器在 DOM 模板中会被自动转换为全小写 (因为 HTML 是大小写不敏感的)
+          //所以如果是 v-on:myEvent 形式 ,将会变成 v-on:myevent——导致 myEvent 不可能被监听到
+        },
+        props:['myName','myAge']
+      }
+      Vue.component('parent-component',{
+        template:`
+          <div>
+            <table>
+            <tr>
+              <td colspan = "3">父组件数据</td>
+            </tr>
+            <tr>
+              <td>Name</td>
+              <td>{{name}}</td>
+              <td><input type="text" v-model='name'/></td>
+            </tr>
+            <tr>
+              <td>Age</td>
+              <td>{{age}}</td>
+              <td><input type="text" v-model.number='age'/></td>
+            </tr>
+          </table>
+          <h1>子组件1</h1>
+          <h2>静态绑定</h2>
+          <child-component-1 v-bind:name="name" v-bind:age="age" ></child-component-1>
+          <br>
+          <h1>子组件2</h1>
+          <h2>单向绑定</h2>
+          <p>prop默认是单向绑定：当父组件的属性变化时，将传导给子组件，但是反过来不会。这是为了防止子组件无意修改了父组件的状态</p>
+          <br>
+          <child-component-2 v-bind:my-name="name" v-bind:my-age="age" ></child-component-2>
+          <h2>双向绑定</h2>
+          <p>可以使用.sync显式地指定双向绑定，这使得子组件的数据修改会回传给父组件</p>
+          <child-component-2 v-bind:my-name.sync="name" v-bind:my-age.sync="age"></child-component-2>
+          <!-- 相当于
+          <child-component-2 v-bind:my-name="name" @update:my-name='myName => name = myName' v-bind:my-age="age" @update:my-age='myAge => age = myAge'></child-component-2>
+          -->
+          </div>
+        `,
+        components:{
+          'child-component-1':childComponent_1,
+          'child-component-2':childComponent_2
+        },
+        data:function(){
+          return {
+            name:'TOM',
+            age:12
+          }
+        }
+      })
+      new Vue({
+           el:'#app',
+          //  data:{
+          //   name:'TOM',
+          //   age:12
+          //  }
+       })
+  </script>
+</body>
+</html>

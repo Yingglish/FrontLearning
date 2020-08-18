@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="../lib/vue.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 父组件向子组件 传递 方法，使用 事件绑定机制: v-on -->
+        <com @func='show'></com>
+    </div>
+    <template id="tmp1">
+        <div>
+            <h1>这是子组件</h1>
+            这是子组件中的按钮, 点击她触发父组件传递过来的func方法
+            <input type='button'  value="点击"  @click='myclick'>
+        </div>
+    </template>
+</body>
+<script>
+    // 定义一个字面量类型的组件模板
+    var com = {
+        template: '#tmp1',
+        methods: {
+            myclick() {
+                this.$emit('func',123);
+            }
+        }
+    }
+    var app = new Vue({
+        el: '#app',
+        data: {},
+        methods: {
+            show(data) {
+                console.log('调用了父组件上的 show 方法' + data);
+            }
+        },
+        components: {
+            com,
+        }
+    })
+</script>
+
+</html>

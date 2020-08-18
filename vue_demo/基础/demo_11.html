@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>组件父链</title>
+    <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        {{ message }}
+        <br>
+        <button @click = "handleRef">通过 ref 获取子组件实例</button>
+        <my-component ref="child"></my-component>
+    </div>
+    <script>
+        "use strict";
+        Vue.component('my-component',{
+            template:`
+            <button @click = "handleEvent">通过父链修改数据</button>
+            `,
+            methods:{
+                handleEvent(){
+                    this.$parent.message = '来自组件my-component的数据';
+                }
+            },
+            data(){
+                return {
+                    message : 'hello world'
+                };
+            }
+        });
+        new Vue({
+            data:{
+                message:''
+            },
+            methods:{
+                handleRef(){
+                    // 通过$refs来访问指定的组件实例
+                    console.log(this.$refs.child.message);
+                }
+            }
+        }).$mount('#app');
+    </script>
+</body>
+</html>

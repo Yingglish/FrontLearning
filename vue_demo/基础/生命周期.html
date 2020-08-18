@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>生命周期</title>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 当前时间{{ date }} -->
+        <br>
+        <input type="button" value="修改msg" @click="message = 'NO'">
+        <h4 id='msg'>{{ message }}</h4>
+    </div>
+    <script src="../lib/vue.min.js"></script>
+    <script>
+        // 生命周期 : Vue实例 创建 运行 销毁期间,总是伴随各种各样的事件，这些事件统称为生命周期
+        // 生命周期钩子 : 生命周期事件别名
+
+        "use strict";
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                message: 'hello world',
+                date: new Date()
+            },
+            methods: {
+                show() {
+                    console.log("methods初始化好了");
+                }
+            },
+            /* 创建期间 */
+            beforeCreate: function () {  // 实例刚在内存中创建出来,此时未初始化好 data 和 methods属性
+                //在实例初始化之后，数据观测和 event/watcher 事件配置之前被调用
+                console.log(`el : ${this.$el}`); //el : undefined
+                console.log(`data : ${this.$data}`); //data : undefined
+                console.log(`message : ${this.message}`); //message :undefined
+                // this.show(); // 报错 
+            },
+            created: function () {
+                // 数据观测 (data observer)，属性和方法的运算，watch/event 事件回调已完成
+                // 实例未挂载
+                console.log(`el : ${this.$el}`); //el : undefined
+                console.log(`data : ${this.$data}`); // [object Object]
+                console.log(`message : ${this.message}`);  //message : hello world  
+                this.show();
+            },
+            beforeMount: function () {
+                // 模板已经在内存编译完成,但未把模板渲染到页面中  -- 挂载前
+                console.log(document.getElementById('msg').innerText + '\t'); // {{ message }}
+                console.log(`el : ${this.$el}`); //el : [object HTMLDivElement]
+            },
+            mounted: function () { // 如果要通过某些插件操作页面上的DOM元素，最早可在此处进行
+                // 挂载结束
+                console.log(this.$el); //<div id = "app">...</div>
+                let _this = this; //声明一个变量指向vue实例this,保证作用域一致
+                this.timer = setInterval(function () {
+                    _this.date = new Date(); //修改数据
+                }, 1000);
+            },
+            /* 组件运行阶段 */
+            beforeUpdate() { // 数据被更新(内存中),页面未渲染出新数据
+                console.log("页面上" + document.getElementById('msg').innerText + '\t');
+                console.log("data中" + this.message);
+            },
+            updated() {
+                console.log("页面上" + document.getElementById('msg').innerText + '\t');
+                console.log("data中" + this.message);
+            },
+            beforeDestroy: function () {
+                // vue实例销毁前,此时实例可用 实例上的 data methods 过滤器 指令 都可用
+                if (this.timer) {
+                    clearInterval(this.timer); //在vue实例销毁之前,清除定时器
+                }
+                console.log('vue实例已经销毁');
+            } //控制台输入`vm.$destory()`, 触发 beforeDestroy 和 destroyed 的钩子
+        })
+    </script>
+</body>
+
+</html>

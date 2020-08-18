@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+    <title>计算属性</title>
+</head>
+<body>
+    <div id = "app">
+        <!-- 在控制台输入`vm.site = 'Google www.google.com` 将会调用计算属性site的setter方法，渲染结果将会改变 '-->
+        <p>{{ site }}</p>
+        <p>当前时间{{ date }}</p>
+        <p>原始字符串{{ message }}</p>       
+        <p>计算后反转字符串 {{ reverseMessage_2 }}</p>
+        <p>计算后反转字符串 {{ reverseMessage_2 }}</p>
+        <p>调用方法反转字符串 {{ reverseMessage_1() }} </p>
+        <p>调用方法反转字符串 {{ reverseMessage_1() }} </p>
+        <!-- 计算属性`reverseMessage_2`依赖响应式属性`message`,当`messgae`改变了,computed才会从新计算.反之则使用缓存中的属性值 -->
+        <!-- 在控制台输入`vm.mesgge='message'`观察-->
+    </div>
+    <script>
+        //"use strict";
+        var num = 1;
+        var vm = new Vue({
+            el:'#app',
+            data:{
+                name:'Baidu',
+                url:'www.baidu.com',
+                message:'Hello World'
+            },
+            methods: {
+                reverseMessage_1 : function() {
+                    num+=1;
+                    return this.message.split('').reverse().join('') +  `   num = ${num}`;
+                },
+            },
+            computed: {
+                site:{
+                    // 计算属性的getter
+                    get:function(){
+                        return this.name + ' ' + this.url;
+                    },
+                    // 计算属性的setter
+                    set:function(newValue){
+                        values = newValue.split(' ');
+                        this.name = values[0];
+                        this.url = values[1];
+                    }
+                },
+                reverseMessage_2 : function(){
+                    num++;
+                    return this.message.split('').reverse().join('') + `   num = ${num}`; //依赖实例的message数据
+                },
+                date:function(){
+                    num ++;
+                    return Date.now() + '  num = ' + num;
+                }          
+            },
+        })
+    </script>
+</body>
+</html>

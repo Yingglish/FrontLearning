@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+    <title>TodoList</title>
+  </head>
+  <body>
+    <div id="app">
+      <div>
+        <input type="text" v-model="todoValue"/>
+        <button @click="handleBtnClick">提交</button>
+      </div>
+      <ul>
+        <!--父组件向子组件传值 v-bind -->
+        <todo-item :content="item" :index="index" v-for="(item,index) in list" @delete="handleItemDelete"></todo-item>
+      </ul>
+    </div>
+
+    <script>
+      Vue.component("todoItem", {
+        props: ["content","index"],
+        template: `<li @click="handleItemClick">{{content}}<li>`,
+        methods:{
+            handleItemClick:function(){
+               // alert("click");
+               this.$emit("delete",this.index) //子组件向外(父组件)触发一个delete事件,同时发送要删除项的id
+            }
+        }
+      });
+
+      new Vue({
+        el: "#app",
+        data: {
+          todoValue: "",
+          list: []
+        },
+        methods: {
+          handleBtnClick: function() {
+            this.list.push(this.todoValue);
+            this.todoValue = "";
+          },
+          handleItemDelete:function(index){
+           // alert(`delete + ${index}`)
+            this.list.splice(index,1)
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

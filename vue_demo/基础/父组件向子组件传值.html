@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>父组件向子组件传值</title>
+    <script src="../lib/vue.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <com1 v-bind:parentmsg='msg' />
+    </div>
+</body>
+<script>
+    Vue.config.devtools = true;
+    
+    vm = new Vue({
+        el: '#app',
+        data: {
+            msg: '父组件中的数据',
+        },
+        methods: {
+
+        },
+
+        components: {
+            data() { // 组件中 data数据 必须为函数 为子组件私有
+                return {
+                    title: '123',
+                    content: 'qqq'
+                }
+            },
+            // 子组件中默认无法访问 父子件中data中的数据
+            com1: {
+                template: `<h1 @click='change'>这是子组件 --- {{ parentmsg }} </h1>`,
+                // 把父组件传递过来的 parentmsg 属性, 先在 props 数组定义 这样才能使用
+                props: [
+                    'parentmsg',
+                ],
+                methods: {
+                    change() {
+                        this.parentmsg = '被修改了'; //不推荐这样做
+                    }
+                }
+            }
+        }
+    })
+</script>
+</html>

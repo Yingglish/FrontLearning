@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+    <script src="https://cdn.staticfile.org/vue-router/2.7.0/vue-router.min.js"></script>
+    <title>嵌套路由</title>
+</head>
+<body>
+    <div id="app">
+        <p>
+            <router-link to="/user/foo">/user/foo</router-link>
+            <router-link to="/user/foo/profile">/user/foo/profile</router-link>
+            <router-link to="/user/foo/posts">/user/foo/posts</router-link>
+        </p>
+        <router-view></router-view>
+    </div>
+    <script>
+        //定义组件  
+        const User = {
+            template:`
+            <div class = "user"> 
+            <h1>参数渲染: User {{ $route.params.id }} </h1>
+            <router-view> </router-view>
+            </div>
+            `
+        }
+        const UserHome = { template: '<h2>Home</h2>' }
+        const UserProfile = { template: '<h2>Profile</h2>' }
+        const UserPosts = { template: '<h2>Posts</h2>' }
+        // 传入路由配置，创建router实例
+        const router = new VueRouter({
+            routes:[
+                { path : '/user/:id' , component : User , children:[
+                    { path : '' , component : UserHome },
+                    { path : 'profile' ,component : UserProfile },
+                    { path : 'posts' ,component : UserPosts }
+                ]}
+            ]
+        })
+        const app = new Vue({
+            router
+        }).$mount('#app')
+    </script>
+</body>
+</html>

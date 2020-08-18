@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+    <title>表单数据绑定</title>
+</head>
+<body>
+    <div id="app">
+        <h1>单个复选框</h1>
+        <input type="checkbox" v-model = "checked">
+        <label for = "checkbox"> {{ checked }}</label>
+        <h1>多个复选框</h1>
+        <input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
+        <label for="jack">Jack</label>
+        <input type="checkbox" id="john" value="John" v-model="checkedNames">
+        <label for="john">John</label>
+        <input type="checkbox" id="mike" value="Mike" v-model="checkedNames">
+        <label for="mike">Mike</label>
+        <br>
+        <span>Checked names: {{ checkedNames }}</span>
+        <h1>单选按钮</h1>
+        <input type="radio" id="one" value= "One" v-model="picked" >
+        <label for="one">One</label>
+        <br>
+        <input type="radio" id="two" value="Two" v-model="picked">
+        <label for="two">Two</label>
+        <br>
+        <span>Picked: {{ picked }}</span>
+        <h1>单选选择框</h1>
+        <select v-model="selected">
+            <!-- 一个值为空的禁用选项 -->
+            <option disabled value="">请选择</option>
+            <option value="12">A</option>
+            <option>B</option>
+            <option>C</option>
+        </select>
+        <span>Selected: {{ selected }}</span>
+        <h1>用 v-for 渲染的动态选项</h1>
+        <select v-model = "Selected">
+            <!-- 使用v-bind指令将v-model和Vue实例中的text属性绑定 默认绑定字符串, 对复选框绑定的是布尔值 -->
+            <option v-for="option in options" v-bind:value="option.text">
+                {{ option.text }}
+            </option>
+        </select>
+        <span>Selected ：{{ Selected }}</span>
+        <h1>复选框</h1>
+        <input type="checkbox" v-model ="toggle" true-vale="yes" false-value="no">
+        <h1>使用 lazy 修饰符，从input事件转变为使用 change 事件进行数据同步</h1>
+        <input v-model.lazy="msg" >
+        <br>
+        光标离开输入框数据改变 {{ msg }}
+        <h1>使用.number修饰符，将输入的数据转换为数值类型</h1>
+        <input v-model.number="age" type="number">
+        <h1>使用.trim修饰符，过滤用户输入的首尾空白字符</h1>
+        <input v-model.trim="trim">
+        <br>
+        {{ trim }}
+    </div>
+    <script>
+        var app1 = new Vue({
+            el:'#app',
+            data:{
+                checked:false,
+                checkedNames:[],
+                picked:'',
+                selected:'',
+                Selected:'A',
+                options: [
+                    { text: 'One', value: 'A' },
+                    { text: 'Two', value: 'B' },
+                    { text: 'Three', value: 'C' }
+                ],
+                toggle:false,
+                msg: '',
+                age:'',
+                trim:''
+            }
+        })
+    </script>
+</body>
+</html>

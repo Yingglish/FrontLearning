@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+    <title>VUE_DEMO</title>
+</head>
+
+<body>
+    <div id = "app-1">
+        {{message}}
+        <span v-if = "seen">You can see me!!</span>
+    </div>
+    <!-- v-bind 用于绑定 html 属性-->
+    <div id = "app-2">
+        <span v-bind:title = "message + ' ' + getTitle_1 + ' ·' + getTitle()">
+            鼠标悬停几秒查看此处动态绑定的提示信息<p>{{ getTitle_1 }}</p>
+            <!-- 若为getTitle则渲染出函数,为getTitle()渲染出hahaha1,若计算属性与data中的某项重名，渲染出data中的 -->
+        </span>
+    </div>
+    <!-- v-for 指令可绑定数组的数据来渲染一个项目列表-->
+    <div id = "app-3">
+        <ol>
+            <li v-for = "todo in todos">
+                {{ todo.text }}
+            </li>
+        </ol>
+    </div>
+    <!-- v-on 指令添加一个事件监听器，通过它调用在 Vue 实例中定义的方法 -->
+    <div id="app-4">
+        <p> {{ message }} </p>
+        <button v-on:click = "reverseMessage">逆转消息</button>
+    </div>
+    <!-- v-model 实现表单输入和应用状态之间的双向绑定 -->
+    <div id = "app-5">
+        <p>{{ message}}</p>
+        <input v-model = "message">
+    </div>
+    <div id = "app-6">
+ 
+        <ol>
+                <todo-item 
+                  v-for="item in groceryList"
+                  v-bind:todo = "item"
+                  v-bind:key = "item.id"
+                  ></todo-item>           
+            </ol>
+        <!-- v-for时添加唯一的key可让新增添或新改变的元素渲染,而其他元素复用之前的 -->
+    </div>
+    <!-- 利用对象绑定多html属性 -->
+    <div id="app-7">
+        <p v-bind:title="obj">渲染出的为对象的toString()方法</p>
+    </div>
+    <script src="index.js"></script>
+</body>
+
+</html>

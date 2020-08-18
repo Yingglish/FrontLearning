@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>步骤条</title>
+</head>
+<body>
+
+<style>
+
+    .has-text-right {
+        text-align: right;
+    }
+
+    .button {
+        user-select: none;
+        cursor: pointer;
+        justify-content: center;
+        padding-left: 10px;
+        padding-right: 10px;
+        text-align: center;
+        white-space: nowrap;
+        border: 1px solid #dbdbdb;
+        border-radius: 3px;
+        font-size: 14px;
+        height: 32px;
+    }
+    .button.is-primary {
+        background-color: #3c81df;
+        border-width: 0;
+        color: #fff;
+    }
+    .button.is-primary:focus, .button.is-primary:hover {
+        background-color: #2673db;
+        border-color: transparent;
+        color: #fff;
+    }
+
+    .step-panel {
+        flex: 1 1;
+    }
+
+    .step-panel[class*="leave-active"] {
+        overflow: hidden;
+        position: absolute;
+        transform: translateX(0);
+        transform: translateY(0);
+    }
+
+    .steps-wrap {
+        margin-left: 0;
+        margin-right: 0;
+        display: block;
+    }
+
+    .step-header {
+        margin-left: 0;
+        margin-right: 0;
+        display: flex;
+    }
+
+    .step-header .step-item {
+        position: relative;
+        display: block;
+        -ms-flex-preferred-size: 0;
+        flex-basis: 0;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-negative: 1;
+        flex-shrink: 1;
+    }
+
+    .step-header .step-item i {
+        line-height: 23px;
+    }
+
+    .line .step-item:last-child {
+        flex-grow: 0;
+    }
+
+    .step-content {
+        position: relative;
+        margin: 25px 0 10px;
+        padding: 12px 20px;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        -webkit-box-flex: 1;
+        -ms-flex: 1 1;
+        flex: 1 1;
+    }
+
+    .step-left {
+        position: absolute;
+        top: 50%;
+        -ms-transform: translateY(-50%);
+        -webkit-transform: translateY(-50%);
+        -o-transform: translateY(-50%);
+        transform: translateY(-50%);
+    }
+
+    .step-icon {
+        width: 26px;
+        height: 26px;
+        font-size: 16px;
+        line-height: 26px;
+        color: #fff;
+        text-align: center;
+        background: #d2d6de;
+        border-radius: 50%;
+    }
+
+    .step-desc {
+        padding-left: 40px;
+        margin-left: -5px;
+        padding-right: 5px;
+    }
+
+    .step-desc .step-title {
+        font-weight: bold;
+    }
+
+    /*.pills .step-item {*/
+    /*    background-color: #f3f7f9;*/
+    /*    padding: 10px;*/
+    /*}*/
+
+    /*.pills .step-item.is-active {*/
+    /*    color: #fff;*/
+    /*    background-color: #3c81df;*/
+    /*}*/
+
+    /*.pills .step-item.is-active .step-icon {*/
+    /*    color: #3c81df;*/
+    /*    background-color: #fff;*/
+    /*}*/
+
+    /*.pills .step-item .step-description {*/
+    /*    width: 80%;*/
+    /*    margin-left: 35px;*/
+    /*}*/
+
+    .line .step-item .step-desc {
+        position: relative;
+        display: inline-block;
+        z-index: 8;
+        background-color: #fff;
+    }
+
+    .line .step-item .step-left {
+        z-index: 9;
+    }
+
+    .line .step-item .step-icon i {
+        vertical-align: text-top;
+    }
+
+    .line .step-item.is-active .step-icon {
+        background-color: #3c81df;
+    }
+
+    .line .step-item:before, .line .step-item:after {
+        position: absolute;
+        top: 50%;
+        width: 100%;
+        height: 2px;
+        content: "";
+        background-color: rgba(0, 0, 0, 0.065);
+        -webkit-transition: all .4s ease;
+        transition: all .4s ease;
+    }
+
+    .line .step-item:after {
+        width: 0;
+        background-color: #62a8ea;
+    }
+
+    .line .step-item.is-done:after {
+        width: 100%;
+    }
+
+    .line .step-item.is-done .step-icon {
+        background-color: #62a8ea;
+    }
+
+    .line .step-item:before, .line .step-item:after {
+        left: 20px;
+    }
+
+    .line .step-item:last-child:before, .line .step-item:last-child:after {
+        width: 0;
+    }
+
+    .line .step-item .step-description {
+        position: absolute;
+        width: 80%;
+        left: 35px;
+    }
+
+</style>
+
+<div id="app">
+<!--    current 设置当前进行到第几步 prev-text / next-text 设置按钮文字 -->
+    <steps :current="0" type="line" prev-text="上一步" next-text="下一步">
+        <step title="标题" description="举头望明月">
+            <p>1.床前明月光，疑是地上霜。举头望明月，低头思故乡</p>
+        </step>
+        <step title="Eating" description="春晓">
+            <p>2.春眠不觉晓，处处闻啼鸟。夜来风雨声，花落知多少。</p>
+        </step>
+        <step title="Swimming" description="春夜喜雨">
+            <p>3.好雨知时节，当春乃发生。随风潜入夜，润物细无声</p>
+        </step>
+    </steps>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    const Steps = {
+        template: `
+            <div class="steps-wrap" :class="[type]">
+                <div class="step-header">
+                    <div class="step-item" v-for="(step, index) in steps"
+                        :class="{'is-active': currentIndex === index, 'is-done': index < currentIndex}" :style="{stepStyle}">
+                        <div class="step-left">
+                            <div class="step-icon">
+                                <span v-if="index >= currentIndex">{{ index + 1 }}</span>
+                                <span v-if="index < currentIndex"><i class="fa fa-check"></i></span>
+                            </div>
+                        </div>
+                        <div class="step-desc">
+                            <span class="step-title">{{ step.title }}</span>
+                        </div>
+                        <div class="step-description">{{ step.description }}</div>
+                    </div>
+                </div>
+                <div class="step-content is-flex">
+                    <slot></slot>
+                </div>
+                <div class="step-footer has-text-right" v-if="showFooter">
+                    <button class="button is-primary" @click="prev">{{ prevText }}</button>
+                    <button class="button is-primary" @click="next">{{ nextText }}</button>
+                </div>
+            </div>
+        `,
+        props: {
+            type: {
+                type: String,
+                default: 'pills',
+            },
+            current: {
+                type: Number,
+                default: 0,
+            },
+            prevText: {
+                type: String,
+                default: 'Prev',
+            },
+            nextText: {
+                type: String,
+                default: 'Next',
+            },
+            onPrev: {
+                type: Function,
+                default() {},
+            },
+            onNext: {
+                type: Function,
+                default() {},
+            },
+            showFooter: {
+                type: Boolean,
+                default: true,
+            },
+        },
+        data() {
+            return {
+                steps: [],
+                stepStyle: {},
+                currentIndex: this.current,
+            };
+        },
+        watch: {
+            current(val) {
+                this.currentIndex = val;
+                this.setActiveIndex(this.currentIndex);
+            },
+        },
+        methods: {
+            setActiveIndex(index) {
+                this.$children.forEach((item, i) => {
+                    if (i !== index) {
+                        item.active = false;
+                    } else {
+                        item.active = true;
+                    }
+                });
+            },
+            next() {
+                if (this.currentIndex < this.$children.length) {
+                    this.currentIndex += 1;
+                    this.setActiveIndex(this.currentIndex);
+                    this.onNext(this.currentIndex);
+                }
+            },
+            prev() {
+                if (this.currentIndex > 0) {
+                    this.currentIndex -= 1;
+                    this.setActiveIndex(this.currentIndex);
+                    this.onPrev(this.currentIndex);
+                }
+            },
+        },
+        created() {
+            if (this.type === 'pills') {
+                const width = `${parseInt(100 / this.steps.length, 10)}%`;
+                this.stepStyle['width'] = width;
+            }
+        },
+        mounted() {
+            this.setActiveIndex(this.currentIndex);
+        },
+    }
+    const Step = {
+        template: `
+  <div>
+    <div class="step-panel" v-show="active">
+      <slot></slot>
+    </div>
+  </div>
+        `,
+        props: {
+            title: String,
+            description: String,
+            isActive: Boolean,
+        },
+        data() {
+            return {
+                step: {},
+                active: this.isActive,
+            };
+        },
+        created() {
+            this.step = {
+                title: this.title,
+                description: this.description,
+                isActive: this.isActive,
+            };
+            this.$parent.steps.push(this.step);
+        },
+        mounted() {
+        },
+    }
+    new Vue({
+        el: '#app',
+        components: {
+            'steps': Steps,
+            'step': Step
+        }
+    })
+
+</script>
+</body>
+</html>

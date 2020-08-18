@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="../lib/vue.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <cmt-box @func='loadComment'></cmt-box>
+        <ul>
+            <li v-for='item in list' :key='item.id'>
+                <span>评论人 {{ item.user }}</span>
+                {{ item.content }}
+            </li>
+        </ul>
+    </div>
+    <template id="tmp1">
+        <div>
+            <div>
+                <label>评论人 : </label>
+                <input type="text" v-model='user'>
+            </div>
+            <div>
+                <label>评论内容</label>
+                <textarea cols="30" rows="10" v-model="content"></textarea>
+            </div>
+            <div>
+                <input type="button" value="发表内容" @click="postComment">
+            </div>
+        </div>
+    </template>
+</body>
+<script>
+    var commentBox = {
+        template: '#tmp1',
+        data() {
+            return {
+                user: '',
+                content: ''
+            }
+        },
+        methods: {
+            postComment() {
+                var comment = {
+                    id: Date.now(),
+                    user: this.user,
+                    content: this.content,
+                };
+                //从 localStorage 获取所有评论
+                var list = JSON.parse(localStorage.getItem('cmts') || '[]');
+                list.unshift(comment); // unshift() 方法可向数组的开头添加一个或更多元素，并返回新的长度
+                // 从新保存新的 评论数据
+                localStorage.setItem('cmts', JSON.stringify(list));
+                this.user = this.content = ''; //清空
+                this.$emit('func'); // 添加评论后 调用父组件方法刷新页面
+            }
+        }
+    }
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            list: [
+                { id: Date.now(), user: '李白', content: '天生我材必有用' },
+                { id: Date.now(), user: '杜甫', content: '城春草木深' },
+            ]
+        },
+        methods: {
+            loadComment() { // 从本地 localStorage中加载评论列表
+                var list = JSON.parse(localStorage.getItem('cmts') || '[]');
+                this.list = list;
+            }
+        },
+        beforeCreate() { // 不能调用 loadComment() 方法 此时 data 和 methods 未初始化
+
+        },
+        created() {
+            this.loadComment()
+        },
+        components: {
+            'cmt-box': commentBox,
+        }
+    })
+</script>
+
+</html>

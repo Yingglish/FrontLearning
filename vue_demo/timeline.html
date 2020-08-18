@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <title>Document</title>
+</head>
+<body>
+<style>
+    body{
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.428571428571429;
+    }
+    .timeline {
+        position: relative;
+        border-left: 1px solid rgba(120, 130, 140, 0.13);
+    }
+
+    .timeline-item {
+        position: relative;
+        border-color: rgba(120, 130, 140, 0.13);
+        padding-bottom: 1px;
+    }
+
+    .timeline-item::before {
+        box-sizing: border-box;
+        content: '';
+        position: absolute;
+        border-color: inherit;
+        border-width: 4px;
+        border-style: solid;
+        border-radius: 50%;
+        width: 15px;
+        height: 15px;
+        margin: 0 0 0 -8px;
+        top: 2px;
+        left: 0;
+    }
+
+    .timeline-item .timeline-item-main {
+        margin-left: 24px;
+        padding-bottom: 16px;
+    }
+
+    .timeline-item .timeline-icon {
+        box-sizing: border-box;
+        position: absolute;
+        left: -10px;
+        z-index: 1;
+        width: 20px;
+        height: 20px;
+        border-width: 10px;
+        background: #d2d6de;
+        border-radius: 50%;
+        text-align: center;
+    }
+
+    .timeline-item .timeline-icon i {
+        margin-top: 4px;
+        font-size: 12px;
+    }
+
+    .timeline-item .timeline-item-date {
+        font-size: .85em;
+    }
+
+    .timeline-item.is-primary:before {
+        border-color: #3c81df;
+    }
+
+    .timeline-item.is-primary .timeline-icon {
+        background: #3c81df;
+        color: #fff;
+    }
+
+    .timeline-item.is-info:before {
+        border-color: #3c81df;
+    }
+
+    .timeline-item.is-info .timeline-icon {
+        background: #00c0ef;
+        color: #fff;
+    }
+
+    .timeline-item.is-success:before {
+        border-color: #3c81df;
+    }
+
+    .timeline-item.is-success .timeline-icon {
+        background: #6cc788;
+        color: #fff;
+    }
+
+    .timeline-item.is-warning:before {
+        border-color: #f39c12;
+    }
+
+    .timeline-item.is-warning .timeline-icon {
+        background: #f39c12;
+        color: #fff;
+    }
+
+    .timeline-item.is-danger:before {
+        border-color: #f56954;
+    }
+
+    .timeline-item.is-danger .timeline-icon {
+        background: #f56954;
+        color: #fff;
+    }
+
+    .box-demo-show {
+        padding: 20px 25px 30px;
+        border-bottom: 1px solid #e9e9e9;
+    }
+</style>
+<!--
+    通过date设置时间
+    type	主题颜色，可选值为primary info success danger warning
+        默认有五种主题颜色，包括primary info success danger warning，通过type来设置
+        timeline-item采用slot接收任意形式的内容
+        timeline-item可通过icon参数设置图标
+-->
+<div id="app">
+    <div class="box-demo-show">
+        <timeline>
+            <timeline-item date="2 minutes ago" type="primary">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante soe aiea ose dos soois.
+            </timeline-item>
+            <timeline-item date="Sat, 5 Mar" type="primary">
+                <p>adipiscing elit lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+            </timeline-item>
+            <timeline-item date="Sun, 11 Feb" type="success">
+                Call to customer Jacob and discuss the detail.
+            </timeline-item>
+        </timeline>
+    </div>
+    <div class="box-demo-show">
+        <timeline>
+            <timeline-item date="2 minutes ago" icon="twitter" type="primary">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante soe aiea ose dos soois.
+            </timeline-item>
+            <timeline-item type="primary" date="Sat, 5 Mar">
+                <p>adipiscing elit lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+                <p><a href="">news center</a></p>
+                <p><img src="https://pek3a.qingstor.com/warehouse1/c1.jpg" /></p>
+            </timeline-item>
+            <timeline-item date="Sun, 11 Feb" icon="wechat" type="success">
+                Call to customer Jacob and discuss the detail.
+            </timeline-item>
+        </timeline>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    const timeline = {
+        template: `
+            <div class="timeline">
+                <slot></slot>
+            </div>
+          `
+    }
+    const timelineItem = {
+        template: `
+            <div class="timeline-item" :class="typeClass">
+                <div class="timeline-icon" v-if="icon">
+                    <i class="fa" :class="iconClass"></i>
+                </div>
+                <div class="timeline-item-main">
+                    <div class="timeline-item-date">{{ date }}</div>
+                    <div class="timeline-item-content">
+                        <slot></slot>
+                    </div>
+               </div>
+             </div>
+          `,
+        props: {
+            icon: String,
+            date: String,
+            type: String,
+            color: String,
+        },
+        computed: {
+            iconClass() {
+                return this.icon ? `fa-${this.icon}` : null;
+            },
+            typeClass() {
+                return this.type ? `is-${this.type}` : null;
+            },
+        }
+    }
+    new Vue({
+        el: '#app',
+        components: {
+            'timeline': timeline,
+            'timeline-item': timelineItem
+        }
+    })
+</script>
+</body>
+</html>

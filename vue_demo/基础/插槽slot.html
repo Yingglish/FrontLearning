@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>slot</title>
+    <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div>
+            <h2>单个slot</h2>
+            <my-component>
+                <p>分发的内容</p>
+            </my-component>
+            <my-component-1></my-component-1>
+        </div>
+        <div>
+            <h2>命名slot</h2>
+            <my-component-2>
+                <h2 slot="header">标题</h2>
+                <p>来自父组件的正文内容</p>
+                <div slot="footer">底部信息</div>
+            </my-component-2>
+        </div>
+    </div>
+    <script>
+        Vue.component('my-component-1', {
+            template: `
+            <div>
+                <slot>
+                    <p>如果父组件没有插入内容,将默认出现</p>
+                </slot>
+            </div>
+            `,
+        });
+        Vue.component('my-component-1', {
+            template:`
+            <div class="container">
+                <div class="header">
+                    <slot name = "header"></slot>
+                </div>
+                <div class="main">
+                    <slot>将作为默认slot出现,来自子组件的正文内容</slot>
+                </div>
+                <div class="footer">
+                    <slot name = "footer"></slot>
+                </div>
+            </div>
+            `
+        });
+        new Vue({
+            el: '#app'
+        })
+    </script>
+</body>
+</html>

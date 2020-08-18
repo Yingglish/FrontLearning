@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"> 
+    <title>监听器</title>
+</head>
+<body>
+    <div id="watch-example">
+        <p>
+            Ask a yes/no question:
+            <input v-model="question">
+        </p>
+        <p>{{ answer }}</p>
+    </div>
+    <script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#watch-example',
+           data: {
+               question:'',
+               answer: 'I cannot give you an answer until you ask a question!'
+           },
+           watch: {
+               // 如果question发生变化，这个函数就会执行
+               question:function(newQuestion , oldQuestion){
+                    this.answer = 'Waiting for you to stop typing...',
+                    this.debouncedGetAnswer()
+               }
+           },
+           created() {
+               // vue实例创建时执行
+               this.debouncedGetAnswer = _.debounce(this.getAnswer , 500);
+           },
+           methods: {
+               getAnswer:function() {
+                   if(this.question.indexOf('?') === -1) {
+                       this.answer  = 'Questions usually contain a question mark. ;-)'
+                       return
+                   }
+                   this.answer = 'Thinking...'
+                   var temp = this
+                   axios.get('https://yesno.wtf/api').then(function(response){
+                       temp.answer = _.capitalize(response.data.answer)
+                   }).catch(function(error){
+                      temp.answer = 'Error! Could not reach the API. ' + error
+                   })
+               }
+           },
+        })
+    </script>
+</body>
+</html>

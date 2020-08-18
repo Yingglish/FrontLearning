@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>组件中使用vuex</title>
+  </head>
+  <style lang="css">
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        #app {
+        width: 1%;
+        margin: 25% auto;
+        font-size: 1.9em;
+    }
+  </style>
+
+  <body>
+    <div id="app">
+      <counter></counter>
+    </div>
+  </body>
+  <script src="../vue_demo/lib/vue.min.js"></script>
+  <script src="../vue_demo/lib/vuex.js"></script>
+  <script>
+    const store = new Vuex.Store({
+      state: {
+        count: 2
+      }
+    });
+    // 创建一个 Counter 组件 每当 store.state.count 变化的时候, 都会重新求取计算属性，并且触发更新相关联的 DOM
+    const Counter = {
+      template: `<div>{{ count }}</div>`,
+      computed: {
+        count() {
+            // 通过在根实例中注册 store 选项，该 store 实例会注入到根组件下的所有子组件中，且子组件能通过 this.$store 访问到
+          return this.$store.state.count;
+          return store.state.count;
+        }
+      }
+    };
+
+    const app = new Vue({
+      el: "#app",
+      // 把 store 对象提供给 “store” 选项，这可以把 store 的实例注入所有的子组件
+      store,
+      components: { Counter }
+    });
+  </script>
+</html>

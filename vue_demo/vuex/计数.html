@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>使用vuex完成一个计数应用</title>
+</head>
+
+<body>
+  <div id="app">
+    <p>
+      <h3>{{ $store.state.count }}</h3>
+    </p>
+      <h3>{{ countAdd1001 }}</h3>
+    <p>
+      <button @click="increment">+</button>
+      <button @click="incrementAction">+a</button>
+      <button @click="$store.commit('decrement')">-</button>
+      <button @click="reset">reset</button>
+    </p>
+  </div>
+</body>
+<script src="../vue_demo/lib/vue.min.js"></script>
+<script src="../vue_demo/lib/vuex.js"></script>
+<script>
+  // 如果在模块化构建系统中，请确保在开头调用了 Vue.use(Vuex)
+
+  const store = new Vuex.Store({
+    state: {
+      count: 0,
+    },
+    // Vuex 中的 mutation 非常类似于事件：每个 mutation 都有一个字符串的 事件类型 (type) 和 一个 回调函数 (handler)
+    // 你不能直接调用一个 mutation 回调函数，当触发一个类型为 increment 的 mutation 时，调用此函数
+    // 要调用这个回调函数，要 以相应的 type 调用 store.commit 方法
+    mutations: {
+      // 事件类型 : 所触发的回调函数
+      increment: state => state.count++,
+      decrement: function (state) {
+        state.count--;
+      },
+      // 可以向 store.commit 传入额外的参数，即 mutation 的 载荷（payload）
+      reset: function (state, isReset) {
+        if (isReset) {
+          state.count = 0;
+        }
+      }
+    },
+    getters: {
+      // getters 类似 computed
+      // Getter 接受 state 作为其第一个参数
+      countAdd100: state => {
+        return state.count += 100 // 每次count 的值发生变化的时候，都会进行加100的操作
+      }
+    },
+    /*
+      1. Action 函数接受一个与 store 实例具有相同方法和属性的 context 对象
+      2. 因此你可以调用 context.commit 提交一个 mutation，或者通过 context.state 和 context.getters 来获取 state 和 getters
+    */
+    actions: {
+      /*
+        Action 类似于 mutation，不同在于：
+          1.  Action 提交的是 mutation，而不是直接变更状态。
+          2.  Action 可以包含任意异步操作。 下面代码中incrementAsync模拟了一个异步操作
+      */
+     /*
+        context：上下文对象，这里你可以理解称store本身。
+        {commit}：直接把commit对象传递过来，可以让方法体逻辑和代码更清晰明了
+     */
+      incrementAction({ commit }) {
+        commit("increment")
+      },
+      decrementAction({ commit }) {
+        commit("decrement")
+      },
+      incrementAsync({ commit }) {
+        setTimeout(() => {
+          commit('increment')
+        }, 1000)
+      }
+    }
+  })
+  // 创建一个 store后,可以通过 store.state 来获取状态对象，以及通过 store.commit 方法触发状态变更
+  new Vue({
+    el: '#app',
+    store,
+    computed: {
+      count() { // 等价于 ...mapState(["count"])
+        return this.$store.state.count
+      },
+      countAdd1001() { // 改变名称时写法 ...mapGetters({countAdd100 : state => state.getters})
+        return this.$store.getters.countAdd100
+      }
+      
+    },
+    methods: {
+      //  ...mapMutations(['increment','decrement'])
+      increment() {
+        this.$store.commit('increment')
+      },
+      decrement() {
+        this.$store.commit('decrement')
+      },
+      reset() {
+        // store.commit('reset',true);
+
+        // 提交 mutation 的另一种方式是直接使用包含 type 属性的对象
+        this.$store.commit(
+          {
+            type: 'reset',
+            isReset: true
+          }
+        )
+      },
+      // ...mapActions
+      incrementAction() {
+        // dispactch方法调用action
+        this.$store.dispatch('incrementAction')
+      }
+    },
+  })
+</script>
+
+</html>

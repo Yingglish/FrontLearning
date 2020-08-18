@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>组件</title>
+    <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <parent-component></parent-component>
+        <button-counter></button-counter>
+        <button-counter></button-counter>
+        <button-counter></button-counter>
+    </div>
+   <script>
+       "use strict";
+
+        const childComponent = {
+            template:'<p>This is a childComponent</p>'
+        };
+
+       
+       Vue.component('parent-component',{
+           template:`
+           <div>
+                <child-component></child-component>
+                <p>This a parentComponent</p>      
+            <div>
+           `,
+              /*
+                每个组件只能有一个根元素===>tempalate下面第一层同级元素只能有一个
+                多个根元素优先显示第一个
+              */
+           components:{
+               //在父组件中使用子组件
+               'child-component':childComponent,//局部注册childComponent组件,该组件只能在parent-component中使用
+               /* 
+                    也可写成这样的形式
+                    'child-component':{
+                        template:'<p>This is a childComponent</p>',
+                    }
+                */
+            } 
+       });
+       Vue.component('button-counter', {
+           // 一个组件的 data 选项必须是一个函数，因此每个实例可以维护一份被返回对象的独立的拷贝
+            data: function () {
+                //返回一个  新对象
+                return {
+                    count: 0
+                }
+        },
+            template: '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
+        })
+       new Vue({
+           el:'#app'
+       })
+   </script> 
+</body>
+</html>

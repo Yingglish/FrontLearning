@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>`native`修饰符</title>
+    <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <p>在父组件中给子组件绑定一个原生的事件, 就将子组件变成了普通的HTML标签，不加`.native`是无法触发的</p>
+        <p>点击元素输出元素内容:</p>
+        <ol>
+            <todo-item v-for="item in sites" v-bind:todo="item" @click.native="alert(item.text)"></todo-item>
+        </ol>
+    </div>
+    <script>
+        Vue.component('todo-item', {
+            props: ['todo'],
+            template: '<li>{{ todo.text }}</li>'
+        })
+        new Vue({
+            el: '#app',
+            data: {
+                sites: [{
+                        text: 'Runoob'
+                    },
+                    {
+                        text: 'Google'
+                    },
+                    {
+                        text: 'Taobao'
+                    }
+                ]
+            }
+        })
+    </script>
+</body>
+
+</html>

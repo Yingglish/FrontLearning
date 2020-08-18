@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+    <title>事件监听</title>
+</head>
+<body>
+    <h1>通过vue监听事件实现一个简单的购物车</h1>
+    <div id="app" v-cloak>
+        <template v-if="list.length">
+            <table>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>商品名称</th>
+                    <th>商品价格</th>
+                    <th>购买数量</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="iphone in list" :key='iphone.id'>
+                    <td>{{ iphone.id }}</td>
+                    <td>{{ iphone.name }}</td>
+                    <td>{{ iphone.price }}</td>
+                    <td>
+                        <button v-bind:disabled="iphone.count === 0" v-on:click="iphone.count -=1">-</button>
+                        {{ iphone.count }}
+                        <button v-on:click="iphone.count +=1">+</button>
+                    </td>
+                    <td>
+                        <button v-on:click="iphone.count = 0">移除</button>
+                    </td>
+                </tr>
+            </tbody>
+            </table>
+            总价: ${{totalPrice()}}
+        </template>
+        <div v-else>购物车为空</div>
+    </div>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                list: [{
+                    id: 1,
+                    name: 'iphone 8',
+                    price: 5099,
+                    count: 1
+                }, {
+                    id: 2,
+                    name: 'iphone xs',
+                    price: 8699,
+                    count: 1
+                }, {
+                    id: 3,
+                    name: 'iphone xr',
+                    price: 6499,
+                    count: 1
+                }]
+            },
+            methods: {
+                totalPrice: function () {
+                    var totalPrice = 0;
+                    for (var i = 0, len = this.list.length; i < len; i++) {
+                        totalPrice += this.list[i].price * this.list[i].count;
+                    }
+                    return totalPrice;
+                }
+            },
+        })
+    </script>
+</body>
+</html>

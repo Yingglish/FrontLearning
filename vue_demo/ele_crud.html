@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <title>增删改查</title>
+</head>
+
+<body>
+    <div id="app">
+        <el-table :data="tableData" style="width: 100%">
+            <el-table-column label="序号" type="index"></el-table-column>
+            <el-table-column label="姓名" prop="name" width="200"></el-table-column>
+            <el-table-column label="生日" prop="date" width="200"></el-table-column>
+            <el-table-column label="地址" prop="address"></el-table-column>
+            <!-- 通过 Scoped slot 可以获取到 row, column, $index 和 store（table 内部的状态管理）的数据 -->
+            <el-table-column label="操作">
+                <template slot-scope="scope">
+                  <el-button
+                    size="mini"
+                    @click="editUser(scope.$index, scope.row)">编辑</el-button>
+                  <el-button
+                    size="mini"
+                    type="danger"
+                    @click="delUser(scope.$index)">删除</el-button>
+                </template>
+              </el-table-column>
+        </el-table>
+        <el-row :gutter="20">
+            <el-col :span="8">
+                <el-input v-model="userInfo.name" placeholder="请输入姓名"></el-input>
+            </el-col>
+            <el-col :span="5">
+                <el-date-picker v-model="userInfo.date" placeholder="选择生日" format="yyyy年MM月dd日"
+                    value-format="yyyy-MM-dd">
+                </el-date-picker>
+            </el-col>
+            <el-col :span="11">
+                <el-input v-model="userInfo.address" placeholder="请输入地址"></el-input>
+            </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top: 10px;">
+            <el-col :span="24">
+                <el-button type="primary" @click="addUser">增加</el-button>
+            </el-col>
+        </el-row>
+        <!-- 编辑 -->
+        <el-dialog title="编辑" :visible.sync="editDialogVisible">
+            <el-form ref="form" :model="newUser" label-width="60px">
+                <el-form-item label="姓名">
+                    <el-input v-model="newUser.name" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="日期">
+                    <el-date-picker v-model="newUser.date" placeholder="选择日期" format="yyyy年MM月dd日"
+                        value-format="yyyy-MM-dd">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="地址">
+                    <el-input v-model="newUser.address" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="editDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="saveUser">确 定</el-button>
+            </div>
+        </el-dialog>
+        <!-- 删除 -->
+        <el-dialog title="提示" :visible.sync="delDialogVisible" width="30%">
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="delDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="delDialogVisible = false">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script>
+        var vm = new Vue({
+            el: "#app",
+            data() {
+                return {
+                    userInfo: {
+                        name: '',
+                        date: '',
+                        address: ''
+                    },
+                    tableData: [
+                        {
+                            name: '王小虎',
+                            address: '上海市普陀区金沙江路 1518 弄',
+                            date: '2016-05-04'
+                        }, {
+                            date: '2016-05-04',
+                            name: '王小虎',
+                            address: '上海市普陀区金沙江路 1517 弄'
+                        },
+                    ],
+                    delDialogVisible: false,
+                    editDialogVisible: false,
+                    newUser: {
+                        name: '',
+                        date: '',
+                        address: ''
+                    },
+                    userIndex: 0
+                }
+            },
+            methods: {
+                // handleEdit(index, row) {
+                //     console.log(index, row);
+                // },
+                // handleDelete(index, row) {
+                //     console.log(index, row);
+                // },
+                addUser() {
+                this.tableData.push(this.userInfo);
+                this.userInfo = {
+                    name: '',
+                    date: '',
+                    address: ''
+                }
+            },
+            editUser(index, item) {
+                this.userIndex = index;
+                this.newUser = {
+                    name: item.name,
+                    date: item.date,
+                    address: item.address
+                }
+                this.editDialogVisible = true;
+            },
+            delUser(index) {
+                this.$confirm('确认删除？')
+                    .then(_ => {
+                        this.tableData.splice(index, 1)
+                    })
+                    .catch(_ => { });
+            },
+            saveUser() {
+                this.editDialogVisible = false;
+                Vue.set(this.tableData, this.userIndex, this.newUser);
+            }
+        }
+        })
+    </script>
+</body>
+
+</html>

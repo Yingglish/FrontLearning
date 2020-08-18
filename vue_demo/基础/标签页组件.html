@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>标签页组件</title>
+    <script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+  </head>
+  <style>
+    [v-cloak] {
+      display: none;
+    }
+
+    .tabs {
+      font-size: 14px;
+      color: #657180;
+    }
+
+    .tabs-bar:after {
+      content: "";
+      display: block;
+      width: 10;
+      height: lpx;
+      background: #d7dde4;
+      margin-top: -lpx;
+    }
+
+    .tabs-tab {
+      display: inline-block;
+      padding: 4px 16px;
+      margin-right: 6px;
+      background: #fff;
+      border: lpx solid #d7dde4;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .tabs-tab-active {
+      color: #3399ff;
+      border-top: lpx solid #3399ff;
+      border-bottom: lpx sol id #fff;
+    }
+
+    .tabs-tab-active:before {
+      content: "";
+      display: block;
+      height: lpx;
+      background: #3399ff;
+      position: absolute;
+      top: O;
+      left: 0;
+      right: 0;
+    }
+
+    .tabs-content {
+      padding: 8px 0;
+    }
+  </style>
+
+  <body>
+    <div id="app" v-cloak>
+      <tabs v-model="activeKey">
+        <pane label="标签一" name="1">标签一的内容</pane>
+        <!-- 主题内容由父级控制 -->
+        <pane label="标签二" name="2">标签二的内容</pane>
+        <pane label="标签三" name="3">标签三的内容</pane>
+      </tabs>
+    </div>
+    <script>
+      Vue.component("pane", {
+        name: "pane",
+        template: `
+            <div class = "pane" v-show="isShow">
+                <slot></slot>
+            </div>
+            `,
+        props: {
+          name: {
+            type: String
+          },
+          label: {
+            type: String,
+            default: ""
+          }
+        },
+        data() {
+          return {
+            isShow: true
+          };
+        },
+        methods: {
+          updateNav() {
+            this.$parent.updateNav();
+          }
+        },
+        watch: {
+          label() {
+            this.updateNav();
+          }
+        },
+        mounted() {
+          this.updateNav();
+        }
+      });
+      Vue.component("tabs", {
+        template: `
+            <div class = "tabs">
+                <div class = "tabs-bar">
+                    <div :class="tabCls(item)" v-for="(item,index) in navList"
+                        @click="handleChange(index)">
+                        {{item.label}}
+                    </div>
+                </div>
+                <div class = "tabs-content">
+                    <slot></slot>
+                </div>                
+            </div>
+            `,
+        props: {
+          value: {
+            type: [String, Number]
+          }
+        },
+        data() {
+          return {
+            currentValue: this.value,
+            navList: []
+          };
+        },
+        methods: {
+          tabCls(item) {
+            return [
+              "tabs-tab",
+              {
+                "tabs-tab-active": item.name === this.currentValue
+              }
+            ];
+          },
+          getTabs() {
+            return this.$children.filter(function(item) {
+              return item.$options.name === "pane";
+            });
+          },
+          updateNav() {
+            this.navList = [];
+            var _this = this;
+
+            this.getTabs().forEach(function(pane, index) {
+              _this.navList.push({
+                label: pane.label,
+                name: pane.name || index
+              });
+              if (!pane.name) {
+                pane.name = index;
+              }
+              if (index === 0) {
+                if (!_this.currentValue) {
+                  _this.currentValue = pane.name || index;
+                }
+              }
+            });
+            this.updateStatus();
+          },
+          updateStatus() {
+            var tabs = this.getTabs();
+            var _this = this;
+
+            tabs.forEach(function(tab) {
+              return (tab.isShow = tab.name === _this.currentValue);
+            });
+          },
+          handleChange(index) {
+            var nav = this.navList[index];
+            var name = nav.name;
+
+            this.currentValue = name;
+            this.$emit("input", name);
+            this.$emit("on-click", name);
+          }
+        },
+        watch: {
+          value(val) {
+            this.currentValue = val;
+          },
+          currentValue() {
+            this.updateStatus();
+          }
+        }
+      });
+
+      new Vue({
+        el: "#app",
+        data: {
+          activeKey: "1"
+        }
+      });
+    </script>
+  </body>
+</html>

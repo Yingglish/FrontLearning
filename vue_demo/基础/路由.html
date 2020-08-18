@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+    <script src="https://cdn.staticfile.org/vue-router/2.7.0/vue-router.min.js"></script>
+    <title>Vue 路由</title>
+    <style>
+        .router-link-active, .myactive {
+            color: red;
+            font-size: 1.5rem;
+            font-style: italic;
+        }
+        .v-enter,
+        .v-leave-to {
+            opacity: 0;
+            transform: translateX(140px)
+        }
+        .v-enter-active,
+        .v-leave-active {
+            transition: all 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- 使用router-link 组件来导航 router-link默认渲染为一个 a 标签-->
+        <!-- 通过传入 `to` 属性绑定路由 -->
+        <!-- <router-link> 默认渲染为一个<a>标签 -->
+        <router-link to="/foo" tag="span">Go to Foo</router-link>
+        <br>
+        <router-link to="/foo/profile">Go to Foo/Proflie</router-link>
+        <br>
+        <br>
+        <router-link to="/bar">Go to Bar</router-link>
+        <br>
+        <!-- 路由出口,路由匹配到的组件将渲染在这里  -->
+        <transition mode='out-in'>
+            <router-view></router-view>
+        </transition>
+    </div>
+    <script>
+        //1. 定义路由组件
+        const Foo = { template:`
+            <div>
+                <span>foo</span>
+                <router-view></router-view>
+            </div>
+        `
+        };
+        const Bar = { template:`
+            <div>bar</div>
+        `};
+        const FooProfile = { template: '<div>profile</div>'}
+        //2.定义路由 ,每个路由应该映射一个组件
+        const routes = [
+            // {
+            //     path: '/',
+            //     redirect: '/foo' // 重定向
+            // },
+            {
+                path:"/foo" , // 必需 表示监听 哪个路由地址 
+                component : Foo,
+                children:[
+                    {
+                        path:'profile',
+                        component:FooProfile
+                    },
+                    // {
+                    //     path : '/' , 
+                    //     component : Foo //若写这个 则在`/foo`处渲染出两个Foo组件 否则只有一个
+                    // },
+                ]
+            },
+            {
+                path:"/bar", 
+                component : Bar,
+                }
+        ]
+        //3.创建 router实例，传入`routes`配置
+        const router = new VueRouter({
+            routes, // (缩写) 相当于 routes: routes
+            linkActiveClass: 'myactive', // 设置路由激活类
+        })
+        const vm = new Vue({
+            router:router,
+        }).$mount('#app')
+    </script>
+</body>
+</html>
